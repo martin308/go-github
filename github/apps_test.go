@@ -421,7 +421,7 @@ func TestAppsService_CreateAttachement(t *testing.T) {
 	client, mux, _, teardown := setup()
 	defer teardown()
 
-	mux.HandleFunc("/content_references/11/attachments", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/repos/owner/repo/content_references/11/attachments", func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "POST")
 		testHeader(t, r, "Accept", mediaTypeContentAttachmentsPreview)
 
@@ -430,7 +430,7 @@ func TestAppsService_CreateAttachement(t *testing.T) {
 	})
 
 	ctx := context.Background()
-	got, _, err := client.Apps.CreateAttachment(ctx, 11, "title1", "body1")
+	got, _, err := client.Apps.CreateAttachment(ctx, "owner", "repo", 11, "title1", "body1")
 	if err != nil {
 		t.Errorf("CreateAttachment returned error: %v", err)
 	}
@@ -442,12 +442,12 @@ func TestAppsService_CreateAttachement(t *testing.T) {
 
 	const methodName = "CreateAttachment"
 	testBadOptions(t, methodName, func() (err error) {
-		_, _, err = client.Apps.CreateAttachment(ctx, -11, "\n", "\n")
+		_, _, err = client.Apps.CreateAttachment(ctx, "owner", "repo", -11, "\n", "\n")
 		return err
 	})
 
 	testNewRequestAndDoFailure(t, methodName, client, func() (*Response, error) {
-		got, resp, err := client.Apps.CreateAttachment(ctx, 11, "title1", "body1")
+		got, resp, err := client.Apps.CreateAttachment(ctx, "owner", "repo", 11, "title1", "body1")
 		if got != nil {
 			t.Errorf("testNewRequestAndDoFailure %v = %#v, want nil", methodName, got)
 		}
